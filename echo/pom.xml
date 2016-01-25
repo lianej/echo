@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>me.lianej</groupId>
-	<artifactId>echo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<modules>
-		<module>echo-core</module>
-		<module>echo-web</module>
-    <module>echo-test</module>
-  </modules>
-
 	<properties>
+		<!-- 统一子工程版本号 -->
+		<project.unified.version>0.0.1-SNAPSHOT</project.unified.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<compile.encoding>UTF-8</compile.encoding>
 		<junit.version>4.12</junit.version>
@@ -22,6 +15,17 @@
 		<dbcp.version>2.1.1</dbcp.version>
 		<mysql-connector.version>5.1.38</mysql-connector.version>
 	</properties>
+
+
+	<groupId>me.lianej</groupId>
+	<artifactId>echo</artifactId>
+	<version>${project.unified.version}</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>echo-core</module>
+		<module>echo-web</module>
+		<module>echo-test</module>
+	</modules>
 
 
 	<build>
@@ -53,7 +57,7 @@
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
-			
+
 			<!-- junit -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -61,7 +65,7 @@
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<!-- spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -84,21 +88,28 @@
 				<artifactId>spring-webmvc</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
-			
+
 			<!-- apache.commons -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-dbcp2</artifactId>
 				<version>${dbcp.version}</version>
 			</dependency>
-			
+
 			<!-- javax -->
-<!-- 			<dependency> -->
-<!-- 				<groupId>javaee</groupId> -->
-<!-- 				<artifactId>javaee-api</artifactId> -->
-<!-- 				<version>5</version> -->
-<!-- 			</dependency> -->
-			
+			<dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-api</artifactId>
+				<version>7.0</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>2.6.1</version>
+			</dependency>
+
 			<!-- mysql -->
 			<dependency>
 				<groupId>mysql</groupId>

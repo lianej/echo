@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>me.lianej</groupId>
 		<artifactId>echo</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>${project.unified.version}</version>
 	</parent>
 	<artifactId>echo-web</artifactId>
 	<packaging>war</packaging>
@@ -14,16 +14,18 @@
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
+			<groupId>me.lianej</groupId>
+			<artifactId>echo-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>javaee</groupId> -->
-<!-- 			<artifactId>javaee-api</artifactId> -->
-<!-- 		</dependency> -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
