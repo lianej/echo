@@ -1,4 +1,4 @@
-package org.echo.core;
+package me.lianej.echo;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
