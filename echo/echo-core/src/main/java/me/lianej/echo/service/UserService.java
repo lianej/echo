@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import me.lianej.echo.dao.IUserDAO;
 import me.lianej.echo.domain.User;
 
-@Service
-@Transactional
+//@Service
+//@Transactional
 public class UserService extends BaseService{
 	
-	@Autowired
+//	@Autowired
 	private IUserDAO userDAO;
 //	@Autowired
 //	private IUserGroupDAO userGroupDAO;

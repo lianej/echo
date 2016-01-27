@@ -4,13 +4,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import me.lianej.echo.dao.IBaseDAO;
 import me.lianej.echo.page.Paging;
@@ -25,13 +26,11 @@ public abstract class AbstractBaseDAO<T> implements IBaseDAO<T>{
 	/**
 	 * 只读库
 	 */
-	@Autowired
-	private SessionFactory readSessionFactory;
+	@Resource private SessionFactory readOnlySessionFactory;
 	/**
 	 * 读写库
 	 */
-	@Autowired
-	private SessionFactory readAndWriteSessionFactory;
+	@Resource private SessionFactory readWriteSessionFactory;
 	
 	@SuppressWarnings("unchecked")
 	protected AbstractBaseDAO(){
@@ -46,35 +45,35 @@ public abstract class AbstractBaseDAO<T> implements IBaseDAO<T>{
 	
 	@Override
 	public void save(T entity) {
-		readAndWriteSessionFactory.getCurrentSession().save(entity);
+		readWriteSessionFactory.getCurrentSession().save(entity);
 	}
 
 	@Override
 	public void update(T entity) {
-		readAndWriteSessionFactory.getCurrentSession().update(entity);
+		readWriteSessionFactory.getCurrentSession().update(entity);
 	}
 
 	@Override
 	public T get(Long id) {
-		return readSessionFactory.getCurrentSession().get(beanClz, id);
+		return readOnlySessionFactory.getCurrentSession().get(beanClz, id);
 	}
 
 	@Override
 	public void delete(Long id) {
 		T entity = get(id);
-		readAndWriteSessionFactory.getCurrentSession().delete(entity);
+		readWriteSessionFactory.getCurrentSession().delete(entity);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> list() {
-		return readSessionFactory.getCurrentSession().createCriteria(beanClz).list();
+		return readOnlySessionFactory.getCurrentSession().createCriteria(beanClz).list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> list(Paging paging) {
-		Criteria criteria = readSessionFactory.getCurrentSession().createCriteria(beanClz);
+		Criteria criteria = readOnlySessionFactory.getCurrentSession().createCriteria(beanClz);
 		switch (paging.getPageMode()) {
 		case Paging.PAGE_MODE_ID:
 			criteria.addOrder(Order.desc("id"));
