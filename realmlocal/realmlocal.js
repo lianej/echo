@@ -1,10 +1,7 @@
 ~function(window,$){
 	"use strict";
 
-	console.log(window)
-	console.log($)
-
-	var typePrefix = '__type__';
+	var typePrefix = '__rl_type__';
 
 	if(!window.localStorage){
 		$.error('浏览器不支持localStorage');
@@ -36,8 +33,7 @@
 				processedValue = +value+'';
 				break;
 			case 'function':
-				$.error('无法储存函数对象');
-				break;
+				$.error('无法储存/获取函数对象');
 			default : $.error('未知的value类型:'+valueType);
 		}
 		window.localStorage.setItem(key,processedValue);
@@ -62,8 +58,7 @@
 			case 'boolean':
 				return value === 'true' ? true : false;
 			case 'function':
-				$.error('无法获取函数对象');
-				break;
+				$.error('无法储存/获取函数对象');
 			default : $.error('未知的value类型:'+valueType);
 		}
 	};
@@ -78,5 +73,4 @@
 
 	$.rl = new RealmLocal();
 
-	console.log(RealmLocal);
 }(window,jQuery);
