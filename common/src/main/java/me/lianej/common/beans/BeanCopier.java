@@ -85,8 +85,9 @@ public class BeanCopier {
 			String srcPropName = pd.getName();
 			if(mapper.hasPropInSrc(srcPropName)){
 				Method method = pd.getReadMethod();
+				Class<?> type = pd.getPropertyType();
 				Assert.notNull(method,"源对象已映射的属性["+srcPropName+"]没有对应的getter");
-				mapper.setReadMethod(srcPropName, method);
+				mapper.setReadMethod(srcPropName, method, type);
 			}
 		}
 		PropertyDescriptor[] destPds = ReflectUtils.getBeanProperties(destClass);
@@ -94,8 +95,9 @@ public class BeanCopier {
 			String destPropName = pd.getName();
 			if(mapper.hasPropInDest(destPropName)){
 				Method method = pd.getWriteMethod();
+				Class<?> type = pd.getPropertyType();
 				Assert.notNull(method,"目标对象已映射的属性["+destPropName+"]没有对应的getter");
-				mapper.setWriteMethod(destPropName, method);
+				mapper.setWriteMethod(destPropName, method, type);
 			}
 		}
 		mapper.setPrepared(true);

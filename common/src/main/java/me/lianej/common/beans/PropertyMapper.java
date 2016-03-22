@@ -38,6 +38,7 @@ class PropertyMapper{
 	 */
 	public PropertyMapper(List<String> expressions){
 		for (String exp : expressions) {
+			//TODO exp.split(";")
 			CopyableProperty p = new CopyableProperty(exp);
 			srcMapping.put(p.getSrcPropName(), p);
 			destMapping.put(p.getDestPropName(), p);
@@ -73,8 +74,8 @@ class PropertyMapper{
 				specialExps.add(exp);
 			}
 		}
-		List<PropertyDescriptor> pds = IntroceptionUtils.findPropertyDescriptors(srcClass, noCopyProps);
 		
+		List<PropertyDescriptor> pds = IntroceptionUtils.findPropertyDescriptors(srcClass, noCopyProps);
 		if(samebeanType){
 			Set<CopyableProperty> specialPropertySet = new HashSet<>();
 			for (String exp : specialExps) {
@@ -95,7 +96,10 @@ class PropertyMapper{
 			}
 		}else{
 			//非同构bean,但依然要使用这种方式生成,说明有大部分属性相同,小部分属性需要经过表达式修正
-			//暂未提供
+			List<PropertyDescriptor> srcPds = pds;
+			for (PropertyDescriptor pd : srcPds) {
+				
+			}
 		}
 		
 		//采用这种方式生成的映射器一定包含了读写方法
@@ -155,14 +159,14 @@ class PropertyMapper{
 			}
 		}
 	}
-	void setReadMethod(String srcPropName,Method m){
+	void setReadMethod(String srcPropName,Method m,Class<?> srcPropType){
 		Collection<CopyableProperty> srcProps = srcMapping.get(srcPropName);
 		for (CopyableProperty prop : srcProps) {
-			prop.setSrcPropGetter(m);
+			prop.setSrcPropGetter(m,srcPropType);
 		}
 	}
-	void setWriteMethod(String destPropName,Method m){
-		destMapping.get(destPropName).setDestPropSetter(m);
+	void setWriteMethod(String destPropName,Method m,Class<?> destPropType){
+		destMapping.get(destPropName).setDestPropSetter(m,destPropType);
 	}
 	Set<CopyableProperty> getCopyablePropertySet() {
 		return mappingSet;

@@ -8,9 +8,9 @@ import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -23,63 +23,46 @@ import org.springframework.util.Assert;
  */
 class CopyableProperty {
 	private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	//表达式暂时不能包含空格
-	private static final Pattern expResolver = Pattern.compile("(\\w+)=(\\w+),?");
+	private static final Log log = LogFactory.getLog(CopyableProperty.class);
 	private String srcPropName;
 	private String destPropName;
 	private String propValueString;
 	private SupportedClass destPropClass = SupportedClass.STRING;
-//	private Class<?> destPropType = String.class;
+	private Class<?> destPropType;
+	private Class<?> srcPropType;
 	private Method srcPropGetter;
 	private Method destPropSetter;
 	private Format privateFormat = format;
-	private Object propValueObject;
+//	private Object propValueObject;
 	private boolean sametype = false;
-	
+	private boolean excluded = false;
+	private boolean prepared = false;
 	
 	/**
-	 * 通过字符串表达式初始化对象<p>
-	 * 表达式形如:<code>src=prop1,dest=prop2,clz=date,format=yyyyMMdd</code><br>
-	 * 或:<code>name=prop,clz=date,format=yyyyMMdd</code><p>
-	 * 
-	 * src: 源对象属性名<p>
-	 * dest: 目标对象属性名<p>
-	 * name: 当源对象和目标对象要copy的属性名一致时,可以使用name=prop的形式来为src和dest同时写入一致的属性名,<b>当填写了src或dest时,此key无效</b><p>
-	 * clz: 目标对象属性类型<b>(可省略,默认为string,支持long,int,integer,date,double,decimal)</b><p>
-	 * 
-	 * format: 如果源属性是日期字符串,而目标属性是日期,则需要填写源属性字符串格式化为日期的格式<b>(可省略,默认为yyyy-MM-dd HH:mm:ss)</b><p>
-	 * @param exp 表达式 
+	 * 根据表达式来解析属性复制映射
+	 * @param exp
 	 */
 	public CopyableProperty(String exp){
-		Assert.hasLength(exp,"属性映射表达式为空字符串,不能初始化对象!");
-		Matcher m = expResolver.matcher(exp);
-		String propName = null;
-		while(m.find()){
-			String value = m.group(2);
-			switch(m.group(1).toLowerCase()){
-			case "name":
-				propName = value;
-				break;
-			case "src":
-				srcPropName = value;
-				break;
-			case "dest":
-				destPropName = value;
-				break;
-			case "format":
-				privateFormat = new SimpleDateFormat(value);
-				break;
-			case "clz":
-				destPropClass = SupportedClass.valueOf(value.toUpperCase());
-				break;
-			}
-		}
-		if(srcPropName==null && destPropName==null){
-			srcPropName = destPropName = propName;
-		}
-		Assert.hasText(srcPropName,"表达式解析失败:"+exp);
-		Assert.hasText(destPropName,"表达式解析失败:"+exp);
+		this(new ExpressionRule(exp));
 	}
+	/**
+	 * 根据规则对象来构建属性复制映射
+	 * @param rule
+	 */
+	private CopyableProperty(ExpressionRule rule){
+		this.destPropName = rule.getDestPropName();
+		this.srcPropName = rule.getSrcPropName();
+		this.excluded = rule.isExcluded();
+		if(rule.getPrivateFormat()!=null){
+			this.privateFormat = new SimpleDateFormat(rule.getPrivateFormat());
+		}
+		if(rule.getDestPropType()!=null){
+			this.destPropClass = SupportedClass.valueOf(rule.getDestPropType().toUpperCase());
+		}
+		this.prepared=false;
+		this.sametype=false;
+	}
+	
 	/**
 	 * 当源对象与目标对象属于同一类型时,可以根据属性描述符构造可复制属性<p>
 	 * 该描述符的read方法将作为源属性的getter,write方法将作为目标属性的setter<p>
@@ -90,10 +73,11 @@ class CopyableProperty {
 		Assert.notNull(pd);
 		this.srcPropGetter = pd.getReadMethod();
 		this.destPropSetter = pd.getWriteMethod();
-		this.sametype = true;
 		this.srcPropName = pd.getName();
 		this.destPropName = pd.getName();
 		this.destPropClass = SupportedClass.valueOf(pd.getPropertyType());
+		this.sametype = true;
+		this.prepared = true;
 	}
 	public String getSrcPropName() {
 		return srcPropName;
@@ -103,21 +87,34 @@ class CopyableProperty {
 		return destPropName;
 	}
 
-	public void setSrcPropGetter(Method srcPropGetter) {
+	public void setSrcPropGetter(Method srcPropGetter,Class<?> srcPropType) {
+		Assert.notNull(srcPropGetter);
+		Assert.notNull(srcPropType);
 		this.srcPropGetter = srcPropGetter;
+		this.srcPropType = srcPropType;
+		this.checkPrepared();
 	}
 
-	public void setDestPropSetter(Method destPropSetter) {
+	public void setDestPropSetter(Method destPropSetter,Class<?> destPropType) {
+		Assert.notNull(destPropSetter);
+		Assert.notNull(destPropType);
 		this.destPropSetter = destPropSetter;
+		this.destPropType = destPropType;
+		this.checkPrepared();
+	}
+	
+	private void checkPrepared(){
+		this.prepared = this.srcPropGetter !=null && this.destPropSetter!=null;
+		if(prepared){
+			this.sametype = this.srcPropType == this.destPropType;
+		}
 	}
 
 	public void setValue(Object val) {
-		if(sametype){
-			propValueObject = val;
-		}else if(val==null){
+		if(val==null){
 			propValueString = null;
 		}else if(val instanceof Date){
-			propValueString = format.format((Date)val);
+			propValueString = privateFormat.format((Date)val);
 		}else if(val instanceof Number || val instanceof String){
 			propValueString = val.toString();
 		}else{
@@ -129,20 +126,29 @@ class CopyableProperty {
 		return destPropClass.valueOf(propValueString, privateFormat);
 	}
 	public void copyProperty(Object srcBean,Object destBean){
+		if(!prepared) throw new RuntimeException("mapper is not prepared!");
+		if(excluded){
+			log.info("属性["+srcPropName+"->"+destPropName+"]被排除,不复制");
+			return;
+		}
 		try {
+			Object temp = srcPropGetter.invoke(srcBean);
 			Object value;
-			if(sametype){
-				value = propValueObject;
-			}else{
-				Object val = srcPropGetter.invoke(srcBean);
-				setValue(val);
-				value = getValue();
+			if(sametype){//同类型属性直接调用setter
+				value = temp;
+			}else{//不同类型属性通过字符串转换一次
+				this.setValue(temp);
+				value = this.getValue();
 			}
 			destPropSetter.invoke(destBean, value);
 		} catch (IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | ParseException e) {
 			throw new RuntimeException("复制属性["+srcPropName+"->"+destPropName+"]的值时出现异常",e);
 		}
+	}
+	
+	public boolean isExcluded() {
+		return excluded;
 	}
 	@Override
 	public int hashCode() {
