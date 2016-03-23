@@ -1,13 +1,18 @@
-package me.lianej.common.beans;
+package me.lianej.common.test;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
+import me.lianej.common.beans.BeanCopier;
+import me.lianej.common.beans.PropertyMapper;
+
 public class TestCase {
-	
+	private Log log = LogFactory.getLog(getClass());
 	private int outLoop = 15;
 	private int innerLoop = 100;
 	
@@ -16,7 +21,8 @@ public class TestCase {
 		System.out.println("test1---------------------begin");
 		long begin = System.currentTimeMillis();
 		Demo src = new Demo("1990-12-11 12:22:00",999,new Date());
-		PropertyMapper mapper = new PropertyMapper(Demo.class);
+		PropertyMapper mapper = BeanCopier.buildMapperWithSametype(Demo.class);
+		
 		for (int i = 0; i < outLoop; i++) {
 			long begin2 = System.currentTimeMillis();
 			for (int j = 0; j < innerLoop; j++) {
@@ -31,7 +37,7 @@ public class TestCase {
 	
 	@Test
 	public void test2() throws Exception{
-		System.out.println("test2---------------------begin");
+		log.debug("测试2:异构对象属性复制");
 		long begin = System.currentTimeMillis();
 		Demo src = new Demo("1990-12-11 12:22:00",999,new Date());
 		List<String> exps = new ArrayList<>();
@@ -39,7 +45,7 @@ public class TestCase {
 		exps.add("src=prop1,dest=arg4,clz=date");
 		exps.add("src=prop2,dest=arg2,clz=int");
 		exps.add("src=prop3,dest=arg3,clz=string");
-		PropertyMapper mapping = new PropertyMapper(exps);
+		PropertyMapper mapping = BeanCopier.buildMapperWithExpressions(Demo.class, Demo2.class, exps);
 		for (int i = 0; i < outLoop; i++) {
 			long begin2 = System.currentTimeMillis();
 			for (int j = 0; j < innerLoop; j++) {
@@ -47,10 +53,9 @@ public class TestCase {
 				BeanCopier.copyBean(src, dest, mapping);//异构拷贝
 //				System.out.println(dest);
 			}
-			System.out.println("第"+i+"次小循环:"+(System.currentTimeMillis()-begin2));
+			log.debug("第"+i+"次小循环:"+(System.currentTimeMillis()-begin2));
 		}
-		System.out.println(System.currentTimeMillis()-begin);
-		System.out.println("test2---------------------end");
+		log.debug(System.currentTimeMillis()-begin);
 	}
 	
 }

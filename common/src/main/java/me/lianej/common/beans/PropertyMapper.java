@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap;
  * 创建时间：2016-3-17 下午1:33:53   
  * @version V0.1
  */
-class PropertyMapper{
+public class PropertyMapper{
 	private Log log = LogFactory.getLog(getClass());
 	//存在一个源属性对应多个目标属性的情况
 	private Multimap<String,CopyableProperty> srcMapping = ArrayListMultimap.create();
@@ -36,7 +36,7 @@ class PropertyMapper{
 	 * @see me.lianej.common.beans.CopyableProperty#CopyableProperty
 	 * @param expressions 表达式集合
 	 */
-	public PropertyMapper(List<String> expressions){
+	PropertyMapper(List<String> expressions){
 		for (String exp : expressions) {
 			//TODO exp.split(";")
 			CopyableProperty p = new CopyableProperty(exp);
@@ -56,7 +56,7 @@ class PropertyMapper{
 	 * 一般映射规则表达式即CopyableProerty的构造表达式,会根据destPropName来覆盖自动生成的映射关系
 	 * @throws IntrospectionException
 	 */
-	public PropertyMapper(Class<?> clazz,String...specialProppertyExpressions) throws IntrospectionException{
+	PropertyMapper(Class<?> clazz,String...specialProppertyExpressions) throws IntrospectionException{
 		this(clazz,clazz,specialProppertyExpressions);
 	}
 	PropertyMapper(Class<?> srcClass,Class<?> destClass,String...specialProppertyExpressions) throws IntrospectionException{
