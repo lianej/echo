@@ -1,12 +1,15 @@
 package me.lianej.common.test;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.springframework.util.Assert;
 
 import me.lianej.common.beans.BeanCopier;
 import me.lianej.common.beans.PropertyMapper;
@@ -14,123 +17,47 @@ import me.lianej.common.beans.PropertyMapper;
 public class TestCase {
 	private Log log = LogFactory.getLog(getClass());
 	private int outLoop = 15;
-	private int innerLoop = 100;
-	
+	private int innerLoop = 10;
 	@Test
 	public void test1() throws Exception{
-		System.out.println("test1---------------------begin");
-		long begin = System.currentTimeMillis();
-		Demo src = new Demo("1990-12-11 12:22:00",999,new Date());
-		PropertyMapper mapper = BeanCopier.buildMapperWithSametype(Demo.class);
-		
-		for (int i = 0; i < outLoop; i++) {
-			long begin2 = System.currentTimeMillis();
-			for (int j = 0; j < innerLoop; j++) {
-				Demo dest = new Demo();
-				BeanCopier.copyBean(src, dest, mapper);
-			}
-			System.out.println("第"+i+"次小循环:"+(System.currentTimeMillis()-begin2));
-		}
-		System.out.println(System.currentTimeMillis()-begin);
-		System.out.println("test1---------------------end");
+		System.out.println("测试1:同构对象复制");
+		Date d1 = new Date();
+		SAPUser src = new SAPUser("zhangsan","111111",1,d1,d1);
+		PropertyMapper mapper = BeanCopier.buildMapperWithSametype(SAPUser.class);
+		copy(src,SystemUser.class,mapper);
 	}
 	
 	@Test
 	public void test2() throws Exception{
-		log.debug("测试2:异构对象属性复制");
-		long begin = System.currentTimeMillis();
-		Demo src = new Demo("1990-12-11 12:22:00",999,new Date());
+		System.out.println("测试2:异构对象属性复制,完全基于表达式");
+		SAPUser src = new SAPUser("zhangsan","111111",1,new Date(),new Date());
 		List<String> exps = new ArrayList<>();
-		exps.add("src=prop1,dest=arg1,clz=date");
-		exps.add("src=prop1,dest=arg4,clz=date");
-		exps.add("src=prop2,dest=arg2,clz=int");
-		exps.add("src=prop3,dest=arg3,clz=string");
-		PropertyMapper mapping = BeanCopier.buildMapperWithExpressions(Demo.class, Demo2.class, exps);
+		exps.add("src=name,dest=username");
+		exps.add("src=pwd,dest=password");
+		exps.add("src=role,dest=role,clz=int");
+		exps.add("src=lastLoginDate,dest=loginTime,clz=date");
+		PropertyMapper mapping = BeanCopier.buildMapperWithExpressions(SAPUser.class, SystemUser.class, exps);
+		copy(src,SystemUser.class,mapping);
+	}
+	
+	@Test
+	public void test3() throws Exception {
+		System.out.println("测试3:");
+		
+	}
+	
+	
+	private void copy(Object src,Class<?> destClass,PropertyMapper mapper) throws Exception{
+		long begin = System.currentTimeMillis();
 		for (int i = 0; i < outLoop; i++) {
 			long begin2 = System.currentTimeMillis();
 			for (int j = 0; j < innerLoop; j++) {
-				Demo2 dest = new Demo2();
-				BeanCopier.copyBean(src, dest, mapping);//异构拷贝
-//				System.out.println(dest);
+				Object dest = destClass.newInstance();
+				BeanCopier.copyBean(src, dest, mapper);//异构拷贝
 			}
-			log.debug("第"+i+"次小循环:"+(System.currentTimeMillis()-begin2));
+			System.out.println("第"+i+"次小循环:"+(System.currentTimeMillis()-begin2));
 		}
-		log.debug(System.currentTimeMillis()-begin);
-	}
-	
-}
-
-class Demo{
-	private String prop1;
-	private Integer prop2;
-	private Date prop3;
-	public String getProp1() {
-		return prop1;
-	}
-	public void setProp1(Object prop1) {
-		this.prop1 = prop1.toString();
-	}
-	public void setProp1(String prop1) {
-		this.prop1 = prop1;
-	}
-	public Integer getProp2() {
-		return prop2;
-	}
-	public void setProp2(Integer prop2) {
-		this.prop2 = prop2;
-	}
-	public Date getProp3() {
-		return prop3;
-	}
-	public void setProp3(Date prop3) {
-		this.prop3 = prop3;
-	}
-	@Override
-	public String toString() {
-		return "Demo [prop1=" + prop1 + ", prop2=" + prop2 + ", prop3=" + prop3
-				+ "]";
-	}
-	public Demo(String prop1, Integer prop2, Date prop3) {
-		super();
-		this.prop1 = prop1;
-		this.prop2 = prop2;
-		this.prop3 = prop3;
-	}
-	public Demo(){}
-}
-class Demo2{
-	private Date arg1;
-	private Integer arg2;
-	private String arg3;
-	private Date arg4;
-	public Date getArg1() {
-		return arg1;
-	}
-	public void setArg1(Date arg1) {
-		this.arg1 = arg1;
-	}
-	public Integer getArg2() {
-		return arg2;
-	}
-	public void setArg2(Integer arg2) {
-		this.arg2 = arg2;
-	}
-	public String getArg3() {
-		return arg3;
-	}
-	public void setArg3(String arg3) {
-		this.arg3 = arg3;
-	}
-	
-	public Date getArg4() {
-		return arg4;
-	}
-	public void setArg4(Date arg4) {
-		this.arg4 = arg4;
-	}
-	@Override
-	public String toString() {
-		return "Demo2 [arg1=" + arg1 + ", arg2=" + arg2 + ", arg3=" + arg3 + ", arg4=" + arg4 + "]";
+		System.out.println(System.currentTimeMillis()-begin);
 	}
 	
 }
