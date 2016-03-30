@@ -7,7 +7,11 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
 import java.util.Date;
-
+/**
+ * 支持字符串从中间量获取值的类型
+ * @author lianej
+ *
+ */
 enum SupportedClass {
 	STRING(String.class){
 		@Override

@@ -33,10 +33,14 @@ class CopyableProperty {
 	private Method srcPropGetter;
 	private Method destPropSetter;
 	private Format privateFormat = format;
-//	private Object propValueObject;
+	//是否为同类型属性,如果是则不走propValueString来转换
 	private boolean sametype = false;
+	//是否为排除复制的属性
 	private boolean excluded = false;
+	//映射中包含了源属性的read method和目标属性的write method时为true
 	private boolean prepared = false;
+	//通过表达式解析的映射优先级更改高
+	private boolean prior = false;
 	
 	/**
 	 * 根据表达式来解析属性复制映射
@@ -61,6 +65,7 @@ class CopyableProperty {
 		}
 		this.prepared=false;
 		this.sametype=false;
+		this.prior = true;
 	}
 	
 	/**
@@ -126,7 +131,7 @@ class CopyableProperty {
 		return destPropClass.valueOf(propValueString, privateFormat);
 	}
 	public void copyProperty(Object srcBean,Object destBean){
-		if(!prepared) throw new RuntimeException("mapper is not prepared!");
+		if(!prepared) throw new RuntimeException("["+srcPropName+"->"+destPropName+"] mapping is not prepared!"); 
 		if(excluded){
 			log.info("属性["+srcPropName+"->"+destPropName+"]被排除,不复制");
 			return;
@@ -147,8 +152,21 @@ class CopyableProperty {
 		}
 	}
 	
-	public boolean isExcluded() {
-		return excluded;
+//	public boolean isExcluded() {
+//		return excluded;
+//	}
+	/**
+	 * 是否优先于另一条映射<p>
+	 * 当前映射为排除映射时,优先级最高,返回true<p>
+	 * 当前映射为优先映射,并且比较对象不是排除映射时,返回true<p>
+	 * 当前映射和比较对象都 既不是排除映射也不是优先映射时,也返回true<p>
+	 * 否则返回false<p>
+	 * 即:当优先级大于等于比较对象时,返回true,否则返回false<p>
+	 * @param other
+	 * @return
+	 */
+	public boolean isPriorTo(CopyableProperty other) {
+		return this.excluded || (this.prior && !other.excluded) || (!other.excluded && !other.prior);
 	}
 	@Override
 	public int hashCode() {
@@ -173,5 +191,14 @@ class CopyableProperty {
 			return false;
 		return true;
 	}
+	private String getPropTypeName(Class<?> clz){
+		return clz==null?"not perpared":clz.getSimpleName();
+	}
+	@Override
+	public String toString() {
+		return "[" + srcPropName + "(" + getPropTypeName(srcPropType) + ")->" + destPropName + "("
+				+ getPropTypeName(destPropType) + "),prior=" + prior + ",excluded=" + excluded + "]";
+	}
+	
 	
 }

@@ -4,6 +4,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.cglib.core.ReflectUtils;
@@ -38,17 +39,27 @@ public class BeanCopier {
 		return result;
 	}
 	/**
-	 * 构建同类型bean的属性映射器
+	 * 构建同类型bean的属性映射器,使用不定参数
 	 * @param clazz
 	 * @param specialPropertyExpressions
 	 * @return
 	 * @throws IntrospectionException
 	 */
 	public static PropertyMapper buildMapperWithSametype(Class<?> clazz,String...specialPropertyExpressions) throws IntrospectionException{
+		return buildMapperWithSametype(clazz,Arrays.asList(specialPropertyExpressions));
+	}
+	/**
+	 * 构建同类型bean的属性映射器,使用list参数
+	 * @param clazz
+	 * @param specialPropertyExpressions 
+	 * @return
+	 * @throws IntrospectionException
+	 */
+	public static PropertyMapper buildMapperWithSametype(Class<?> clazz,List<String> specialPropertyExpressions) throws IntrospectionException{
 		return new PropertyMapper(clazz,specialPropertyExpressions);
 	}
 	/**
-	 * 根据映射表达式来构建属性映射器
+	 * 完全根据映射表达式来构建属性映射器
 	 * @param srcClass
 	 * @param destClass
 	 * @param expressions
@@ -59,6 +70,18 @@ public class BeanCopier {
 		return prepareMapping(srcClass, destClass, new PropertyMapper(expressions));
 	}
 
+	/**
+	 * 根据属性类型和表达式来构建属性映射器,表达式构建的映射会覆盖同类型属性之间建立的映射(如果他们冲突了)
+	 * @param srcClass
+	 * @param destClass
+	 * @param specialPropertyExpressions
+	 * @return
+	 * @throws IntrospectionException
+	 */
+	public static PropertyMapper buildMapperWithSamepropAndExps(Class<?> srcClass,Class<?> destClass,List<String> specialPropertyExpressions) throws IntrospectionException{
+		return new PropertyMapper(srcClass, destClass, specialPropertyExpressions);
+	}
+	
 	/**
 	 * 根据映射器规则复制对象属性
 	 * @param src

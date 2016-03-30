@@ -32,7 +32,7 @@ class ExpressionRule {
 	 * @param exp 表达式 
 	 */
 	ExpressionRule(String exp){
-		Assert.hasLength(exp);
+		Assert.hasText(exp);
 		Assert.isTrue(!exp.contains(";"),"表达式不能包含分隔符';',多条表达式请分隔后再解析");
 		this.excluded = exp.startsWith("!");//记录否定表达式
 		//否定表达式
