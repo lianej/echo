@@ -4,7 +4,7 @@
 
   <groupId>me.lianej</groupId>
   <artifactId>common</artifactId>
-  <version>0.9.10-SNAPSHOT</version>
+  <version>0.9.11-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>common</name>
@@ -41,7 +41,7 @@
 		<groupId>com.google.guava</groupId>
 		<artifactId>guava</artifactId>
 		<version>19.0</version>
-		<scope>provided</scope>
+<!-- 		<scope>provided</scope> -->
 	</dependency>
     <dependency>
       <groupId>org.springframework</groupId>
