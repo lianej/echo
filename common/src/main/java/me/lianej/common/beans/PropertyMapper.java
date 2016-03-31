@@ -88,7 +88,9 @@ public class PropertyMapper{
 			 * 如果是同类型bean,直接根据源对象来构建映射
 			 * 即:sameProperties全部来源于源对象
 			 */
-			sameProperties = CopierTools.findSrcPropertyDescriptors(srcClass, noCopyProps);;
+			sameProperties = CopierTools.findSrcPropertyDescriptors(srcClass, noCopyProps);
+			//采用这种方式生成的映射器一定包含了读写方法
+			this.prepared = true;
 		}else{
 			//非同类型bean,但依然要使用这种方式生成,说明有大部分属性相同,小部分属性需要经过表达式修正
 			//寻找相同名称的属性,并
@@ -114,8 +116,7 @@ public class PropertyMapper{
 			srcMapping.put(p.getSrcPropName(), p);
 			destMapping.put(p.getDestPropName(), p);
 		}
-		//采用这种方式生成的映射器一定包含了读写方法
-		this.prepared = true;
+
 		
 	}
 	private static Set<PropertyDescriptor> findSameProperties(
@@ -124,12 +125,22 @@ public class PropertyMapper{
 		switch (type) {
 		case PROP_SAME_TYPE:
 			for (PropertyDescriptor spd : srcPds) {
-				if(destPds.contains(srcPds)){
-					result.add(spd);
+				for (PropertyDescriptor dpd : destPds) {
+					if(CopierTools.isSameProperty(spd, dpd)){
+						result.add(spd);
+					}
 				}
 			}
 			break;
 		case PROP_SAME_NAME:
+			for (PropertyDescriptor spd : srcPds) {
+				for (PropertyDescriptor dpd : destPds) {
+					if(CopierTools.isSameNameProperty(spd, dpd)){
+						result.add(spd);
+					}
+				}
+			}
+			break;
 			//TODO
 		}
 		return result;

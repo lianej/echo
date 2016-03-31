@@ -79,7 +79,13 @@ public class BeanCopier {
 	 * @throws IntrospectionException
 	 */
 	public static PropertyMapper buildMapperWithSamepropAndExps(Class<?> srcClass,Class<?> destClass,List<String> specialPropertyExpressions) throws IntrospectionException{
-		return new PropertyMapper(srcClass, destClass, specialPropertyExpressions);
+		//TODO 暂时修复该bug
+		/*
+		 * 由于PropertyMapper的构造器中对表达式生成的映射没有做相应处理,导致单条属性not perpared
+		 * 同时,由于在获取源对象与目标对象的相同属性时,只返回了源对象的属性描述符集合,因此现在的版本,经过构造器生成的映射器实际上是不可用的
+		 * 必须调用prepareMapping将读写方法填入映射器,覆盖原有读写方法
+		 */
+		return prepareMapping(srcClass, destClass, new PropertyMapper(srcClass, destClass, specialPropertyExpressions));
 	}
 	
 	/**
