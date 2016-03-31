@@ -3,6 +3,7 @@ package me.lianej.common.test;
 import java.util.Date;
 
 public class SAPUser {
+	private Long id;
 	private String name;
 	private String pwd;
 	private Integer role;
@@ -52,6 +53,15 @@ public class SAPUser {
 	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
 	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
 		return "SAPUser [name=" + name + ", pwd=" + pwd + ", role=" + role + ", createDate=" + createDate

@@ -8,6 +8,7 @@ public class SystemUser {
 	private Date loginTime;
 	private String loginIp;
 	private Integer role;
+	private Long id;
 	
 	public SystemUser(String username, String password, Date loginTime, String loginIp, Integer role) {
 		super();
@@ -48,10 +49,17 @@ public class SystemUser {
 	public void setRole(Integer role) {
 		this.role = role;
 	}
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	@Override
 	public String toString() {
 		return "SystemUser [username=" + username + ", password=" + password + ", loginTime=" + loginTime + ", loginIp="
-				+ loginIp + ", role=" + role + "]";
+				+ loginIp + ", role=" + role + ", id=" + id + "]";
 	}
 	
 }
