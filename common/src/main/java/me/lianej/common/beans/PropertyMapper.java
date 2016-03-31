@@ -60,9 +60,9 @@ public class PropertyMapper{
 	 * @throws IntrospectionException
 	 */
 	PropertyMapper(Class<?> clazz,List<String> specialProppertyExpressions) throws IntrospectionException{
-		this(clazz,clazz,specialProppertyExpressions);
+		this(clazz,clazz,specialProppertyExpressions,-1);
 	}
-	PropertyMapper(Class<?> srcClass,Class<?> destClass,List<String> specialProppertyExpressions) throws IntrospectionException{
+	PropertyMapper(Class<?> srcClass,Class<?> destClass,List<String> specialProppertyExpressions,int propsame) throws IntrospectionException{
 		List<String> noCopyProps = new ArrayList<>();//排除复制的属性
 		List<String> specialExps = new ArrayList<>();//优先复制的属性
 		boolean samebeanType = srcClass == destClass;
@@ -97,11 +97,7 @@ public class PropertyMapper{
 			Set<PropertyDescriptor> srcPds = CopierTools.findSrcPropertyDescriptors(srcClass, noCopyProps);
 			Set<PropertyDescriptor> destPds = CopierTools.findDestPropertyDescriptors(destClass, noCopyProps);
 			//取源对象和目标对象的属性交集
-			sameProperties = PropertyMapper.findSameProperties(srcPds, destPds, PROP_SAME_TYPE);
-			for (PropertyDescriptor pd : sameProperties) {
-				CopyableProperty p = new CopyableProperty(pd);
-				propertySet.add(p);
-			}
+			sameProperties = PropertyMapper.findSameProperties(srcPds, destPds, propsame);
 		}
 		//表达式具有更高的优先级,如果反射出的描述符生成的可复制属性与表达式生成的相同(只考虑destPropName),则使用由表达式生成的可复制属性对象
 		/*
@@ -112,6 +108,9 @@ public class PropertyMapper{
 			CopyableProperty p = new CopyableProperty(pd);
 			propertySet.add(p);
 		}
+		/*
+		 * 加入集合便于根据属性名查找
+		 */
 		for (CopyableProperty p : propertySet) {
 			srcMapping.put(p.getSrcPropName(), p);
 			destMapping.put(p.getDestPropName(), p);
@@ -128,6 +127,7 @@ public class PropertyMapper{
 				for (PropertyDescriptor dpd : destPds) {
 					if(CopierTools.isSameProperty(spd, dpd)){
 						result.add(spd);
+						break;
 					}
 				}
 			}
@@ -137,6 +137,7 @@ public class PropertyMapper{
 				for (PropertyDescriptor dpd : destPds) {
 					if(CopierTools.isSameNameProperty(spd, dpd)){
 						result.add(spd);
+						break;
 					}
 				}
 			}
@@ -172,14 +173,14 @@ public class PropertyMapper{
 	boolean hasPropInSrc(String srcPropName){
 		boolean result = srcMapping.containsKey(srcPropName);
 		if(!result){
-			log.info("源对象属性["+srcPropName+"]没有配置映射规则,跳过.");
+			log.debug("源对象属性["+srcPropName+"]没有配置映射规则,跳过.");
 		}
 		return result;
 	}
 	boolean hasPropInDest(String destPropName){
 		boolean result = destMapping.containsKey(destPropName);
 		if(!result){
-			log.info("目标对象属性["+destPropName+"]没有配置映射规则,跳过.");
+			log.debug("目标对象属性["+destPropName+"]没有配置映射规则,跳过.");
 		}
 		return result;
 	}

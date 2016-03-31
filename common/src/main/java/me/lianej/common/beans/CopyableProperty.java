@@ -133,7 +133,7 @@ class CopyableProperty {
 	public void copyProperty(Object srcBean,Object destBean){
 		if(!prepared) throw new RuntimeException("["+srcPropName+"->"+destPropName+"] mapping is not prepared!"); 
 		if(excluded){
-			log.info("属性["+srcPropName+"->"+destPropName+"]被排除,不复制");
+			log.debug("属性["+srcPropName+"->"+destPropName+"]被排除,不复制");
 			return;
 		}
 		try {

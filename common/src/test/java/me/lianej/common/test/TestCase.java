@@ -5,15 +5,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import me.lianej.common.beans.BeanCopier;
 import me.lianej.common.beans.PropertyMapper;
 
 public class TestCase {
-	private Log log = LogFactory.getLog(getClass());
+//	private Log log = LogFactory.getLog(getClass());
 	private int outLoop = 2;
 	private int innerLoop = 1000;
 	@Test
@@ -21,7 +19,7 @@ public class TestCase {
 		System.out.println("测试1:同构对象复制");
 		Date d1 = new Date();
 		SAPUser src = new SAPUser("zhangsan","111111",1,d1,d1);
-		PropertyMapper mapper = BeanCopier.buildMapperWithSametype(SAPUser.class);
+		PropertyMapper mapper = BeanCopier.buildMapperWithSameBeantype(SAPUser.class);
 		copy(src,SAPUser.class,mapper);
 	}
 	
@@ -48,12 +46,10 @@ public class TestCase {
 		exps.add("src=pwd,dest=password");
 		exps.add("src=role,dest=role,clz=int");
 		exps.add("src=lastLoginDate,dest=loginTime,clz=date");
-		PropertyMapper mapper = BeanCopier.buildMapperWithSamepropAndExps(SAPUser.class, SystemUser.class, exps);
+		PropertyMapper mapper = BeanCopier.buildMapperWithSameProperty(SAPUser.class, SystemUser.class, exps);
 		
 		List<SystemUser> list = copy(src,SystemUser.class,mapper);
-		for (SystemUser su : list) {
-//			System.out.println(su);
-		}
+		System.out.println(list.get(0));
 		
 	}
 	
