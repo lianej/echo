@@ -4,11 +4,18 @@
 
   <groupId>me.lianej</groupId>
   <artifactId>common</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.9.10-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>common</name>
-  <url>http://maven.apache.org</url>
+  <url>-</url>
+  
+  <developers>
+  	<developer>
+  		<id>lianej</id>
+  		<email>lianej@163.com</email>
+  	</developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,6 +41,7 @@
 		<groupId>com.google.guava</groupId>
 		<artifactId>guava</artifactId>
 		<version>19.0</version>
+		<scope>provided</scope>
 	</dependency>
     <dependency>
       <groupId>org.springframework</groupId>
