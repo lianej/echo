@@ -40,12 +40,12 @@ PropertyMapper mapping = BeanCopier.buildMapperWithExpressions(SAPUser.class, Sy
 //TODO
 ```
 
-* **step.2:**  调用`BeanCopier.copyBean(Object,Object,PropertyMapper)`
+* **step.2:**  调用`BeanCopier.copyProperties(Object,Object,PropertyMapper)`
 ```java
 //将源对象映射过的属性复制到目标对象,会覆盖目标对象上的属性
 BeanCopier.copyProperties(src,dest,mapper); 
 ```
-  或
+  或`BeanCopier.copyBean(Object,Class,PropertyMapper)`
 ```java
 //将创建一个新的目标对象,并复制属性,需要无参公共构造器
 SystemUser dest = BeanCopier.copyBean(src,SystemUser.class,mapper);
