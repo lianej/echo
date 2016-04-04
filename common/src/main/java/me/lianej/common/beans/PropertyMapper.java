@@ -117,6 +117,9 @@ public class PropertyMapper <S,D>{
 
 		
 	}
+	/*
+	 * 此方法用于构造器
+	 */
 	private static Set<PropertyDescriptor> findSameProperties(
 			Set<PropertyDescriptor> srcPds,Set<PropertyDescriptor> destPds,int type){
 		Set<PropertyDescriptor> result = new HashSet<>();
@@ -141,6 +144,7 @@ public class PropertyMapper <S,D>{
 				}
 			}
 			break;
+		default:
 			//TODO
 		}
 		return result;
@@ -212,6 +216,15 @@ public class PropertyMapper <S,D>{
 	}
 	void setPrepared(boolean prepared) {
 		this.prepared = prepared;
+	}
+	/**
+	 * 设置是否要复制空属性,默认为不复制(false)
+	 * @param includeNullValue true为要复制空值,false为不复制
+	 */
+	public void setIncludeNullValue(boolean includeNullValue) {
+		for (CopyableProperty cp : propertySet) {
+			cp.setIncludeNullValue(includeNullValue);
+		}
 	}
 	
 }

@@ -41,6 +41,8 @@ class CopyableProperty {
 	private boolean prepared = false;
 	//通过表达式解析的映射优先级更改高
 	private boolean prior = false;
+	//是否复制空属性
+	private boolean includeNullValue = false;
 	
 	/**
 	 * 根据表达式来解析属性复制映射
@@ -138,6 +140,9 @@ class CopyableProperty {
 		}
 		try {
 			Object temp = srcPropGetter.invoke(srcBean);
+			if(temp==null && !includeNullValue){
+				return;
+			}
 			Object value;
 			if(sametype){//同类型属性直接调用setter
 				value = temp;
@@ -198,6 +203,9 @@ class CopyableProperty {
 	public String toString() {
 		return "[" + srcPropName + "(" + getPropTypeName(srcPropType) + ")->" + destPropName + "("
 				+ getPropTypeName(destPropType) + "),prior=" + prior + ",excluded=" + excluded + "]";
+	}
+	public void setIncludeNullValue(boolean includeNullValue) {
+		this.includeNullValue = includeNullValue;
 	}
 	
 	

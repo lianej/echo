@@ -4,7 +4,7 @@
 
 	<groupId>me.lianej.echo</groupId>
 	<artifactId>beancopier</artifactId>
-	<version>0.10.1-SNAPSHOT</version>
+	<version>0.10.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>beancopier</name>
