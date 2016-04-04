@@ -6,15 +6,14 @@ public class SAPUser {
 	private Long id;
 	private String name;
 	private String pwd;
-	private Integer role;
 	private Date createDate;
 	private Date lastLoginDate;
+	private SAPRole role;
 	
-	public SAPUser(String name, String pwd, Integer role, Date createDate, Date lastLoginDate) {
+	public SAPUser(String name, String pwd, Date createDate, Date lastLoginDate) {
 		super();
 		this.name = name;
 		this.pwd = pwd;
-		this.role = role;
 		this.createDate = createDate;
 		this.lastLoginDate = lastLoginDate;
 	}
@@ -35,12 +34,6 @@ public class SAPUser {
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
-	public Integer getRole() {
-		return role;
-	}
-	public void setRole(Integer role) {
-		this.role = role;
-	}
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -60,6 +53,14 @@ public class SAPUser {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public SAPRole getRole() {
+		return role;
+	}
+
+	public void setRole(SAPRole role) {
+		this.role = role;
 	}
 
 	@Override

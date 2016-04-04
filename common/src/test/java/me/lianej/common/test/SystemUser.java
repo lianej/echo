@@ -7,16 +7,15 @@ public class SystemUser {
 	private String password;
 	private Date loginTime;
 	private String loginIp;
-	private Integer role;
+	private SystemRole role;
 	private Long id;
 	
-	public SystemUser(String username, String password, Date loginTime, String loginIp, Integer role) {
+	public SystemUser(String username, String password, Date loginTime, String loginIp) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.loginTime = loginTime;
 		this.loginIp = loginIp;
-		this.role = role;
 	}
 	public SystemUser(){}
 	public String getUsername() {
@@ -43,18 +42,19 @@ public class SystemUser {
 	public void setLoginIp(String loginIp) {
 		this.loginIp = loginIp;
 	}
-	public Integer getRole() {
-		return role;
-	}
-	public void setRole(Integer role) {
-		this.role = role;
-	}
 	
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public SystemRole getRole() {
+		return role;
+	}
+	public void setRole(SystemRole role) {
+		this.role = role;
 	}
 	@Override
 	public String toString() {
