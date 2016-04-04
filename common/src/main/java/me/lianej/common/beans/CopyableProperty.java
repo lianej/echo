@@ -127,8 +127,8 @@ class CopyableProperty {
 		}
 	}
 	public Object getValue() throws ParseException{
-		if(propValueString==null) return null;
-		return destPropClass.valueOf(propValueString, privateFormat);
+		if(propValueString==null || destPropClass==null) return null;
+		return destPropClass.parse(propValueString, privateFormat);
 	}
 	public void copyProperty(Object srcBean,Object destBean){
 		if(!prepared) throw new RuntimeException("["+srcPropName+"->"+destPropName+"] mapping is not prepared!"); 

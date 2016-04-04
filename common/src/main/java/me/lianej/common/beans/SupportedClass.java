@@ -7,6 +7,9 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
 import java.util.Date;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 /**
  * 支持字符串从中间量获取值的类型
  * @author lianej
@@ -15,28 +18,31 @@ import java.util.Date;
 enum SupportedClass {
 	STRING(String.class){
 		@Override
-		public Object valueOf(String srcValue, Format format) throws ParseException {
+		public Object parse(String srcValue, Format format) throws ParseException {
 			return srcValue;
 		}
 	},
+	CHAR(Character.class),
+	CHARACTER(Character.class),
 	INT(Integer.class),
 	INTEGER(Integer.class),
 	DATE(Date.class){
 		@Override
-		public Object valueOf(String srcValue, Format format) throws ParseException {
+		public Object parse(String srcValue, Format format) throws ParseException {
 			return ((DateFormat) format).parse(srcValue);
 		}
 	},
 	LONG(Long.class),
 	DECIMAL(BigDecimal.class){
 		@Override
-		public Object valueOf(String srcValue, Format format) throws ParseException {
+		public Object parse(String srcValue, Format format) throws ParseException {
 			return new BigDecimal(srcValue);
 		}
 	},
 	BOOL(Boolean.class),
 	BOOLEAN(Boolean.class),
 	DOUBLE(Double.class);
+	private static final Log log = LogFactory.getLog(SupportedClass.class);
 	private Class<?> clazz;
 	private Method valueOfMethod = null;
 	private SupportedClass(Class<?> clazz){
@@ -60,9 +66,11 @@ enum SupportedClass {
 		for (SupportedClass sc : SupportedClass.values()) {
 			if(sc.clazz == clazz) return sc;
 		}
-		throw new RuntimeException("尚未支持属性类型["+clazz.getName()+"]");
+		log.debug("尚未支持属性类型["+clazz.getName()+"]");
+//		throw new RuntimeException("尚未支持属性类型["+clazz.getName()+"]");
+		return null;
 	}
-	public Object valueOf(String srcValue,Format format) throws ParseException{
+	public Object parse(String srcValue,Format format) throws ParseException{
 		try {
 			if(valueOfMethod!=null)
 				return valueOfMethod.invoke(null,srcValue);
