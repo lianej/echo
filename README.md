@@ -7,8 +7,7 @@
  
  ***
  
-* **step.1:**
-  调用`BeanCopier.BuildMapperWith***()`方法来构建映射器(源对象与目标对象属性之间的映射关系)
+* **step.1:** 调用`BeanCopier.BuildMapperWith***()`方法来构建映射器(源对象与目标对象属性之间的映射关系)
 
 
 * step.1-A:当源对象和目标对象是同一个类;
@@ -42,11 +41,15 @@ PropertyMapper mapping = BeanCopier.buildMapperWithExpressions(SAPUser.class, Sy
 //TODO
 ```
 
-* **step.2:**
-  调用`BeanCopier.copyBean(Object,Object,PropertyMapper)`来进行属性复制
+* **step.2:**  调用`BeanCopier.copyBean(Object,Object,PropertyMapper)`
 ```java
-BeanCopier.copyBean(src,dest,mapper);
+BeanCopier.copyProperties(src,dest,mapper); //将源对象映射过的属性复制到目标对象,会覆盖目标对象上的属性
 ```
+  或
+```java
+SystemUser dest = BeanCopier.copyBean(src,SystemUser.class,mapper);//将创建一个新的目标对象,并复制属性,需要无参公共构造器
+```
+来进行属性复制
 
 
 #####映射表达式
