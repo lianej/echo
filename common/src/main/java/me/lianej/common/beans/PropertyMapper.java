@@ -21,11 +21,12 @@ import com.google.common.collect.Multimap;
 
 /**
  * 被映射属性的集合封装
- * 创建人：yanweijin
- * 创建时间：2016-3-17 下午1:33:53   
- * @version V0.1
+ * @author lianej
+ *
+ * @param <S> 源对象类型
+ * @param <D> 目标对象类型
  */
-public class PropertyMapper{
+public class PropertyMapper <S,D>{
 	private Log log = LogFactory.getLog(getClass());
 	static final int PROP_SAME_NAME = 0;//以属性名作为属性比较参考
 	static final int PROP_SAME_TYPE = 1;//以属性名和属性类型作为属性比较参考
@@ -59,10 +60,11 @@ public class PropertyMapper{
 	 * 一般映射规则表达式即CopyableProerty的构造表达式,会根据destPropName来覆盖自动生成的映射关系<p>
 	 * @throws IntrospectionException
 	 */
-	PropertyMapper(Class<?> clazz,List<String> specialProppertyExpressions) throws IntrospectionException{
-		this(clazz,clazz,specialProppertyExpressions,-1);
+	@SuppressWarnings("unchecked")
+	PropertyMapper(Class<S> clazz,List<String> specialProppertyExpressions) throws IntrospectionException{
+		this(clazz,(Class<D>) clazz,specialProppertyExpressions,-1);
 	}
-	PropertyMapper(Class<?> srcClass,Class<?> destClass,List<String> specialProppertyExpressions,int propsame) throws IntrospectionException{
+	PropertyMapper(Class<S> srcClass,Class<D> destClass,List<String> specialProppertyExpressions,int propsame) throws IntrospectionException{
 		List<String> noCopyProps = new ArrayList<>();//排除复制的属性
 		List<String> specialExps = new ArrayList<>();//优先复制的属性
 		boolean samebeanType = srcClass == destClass;

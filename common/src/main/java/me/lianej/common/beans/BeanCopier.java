@@ -34,8 +34,8 @@ public class BeanCopier {
 	 * @return
 	 * @throws IntrospectionException
 	 */
-	public static PropertyMapper buildMapperWithSameBeantype(
-			Class<?> clazz,String...specialPropertyExpressions) throws IntrospectionException{
+	public static <S> PropertyMapper<S,S> buildMapperWithSameBeantype(
+			Class<S> clazz,String...specialPropertyExpressions) throws IntrospectionException{
 		return buildMapperWithSameBeantype(clazz,Arrays.asList(specialPropertyExpressions));
 	}
 	/**
@@ -45,9 +45,9 @@ public class BeanCopier {
 	 * @return
 	 * @throws IntrospectionException
 	 */
-	public static PropertyMapper buildMapperWithSameBeantype(
-			Class<?> clazz,List<String> specialPropertyExpressions) throws IntrospectionException{
-		return new PropertyMapper(clazz,specialPropertyExpressions);
+	public static <S> PropertyMapper<S,S> buildMapperWithSameBeantype(
+			Class<S> clazz,List<String> specialPropertyExpressions) throws IntrospectionException{
+		return new PropertyMapper<S,S>(clazz,specialPropertyExpressions);
 	}
 	/**
 	 * 完全根据映射表达式来构建属性映射器
@@ -57,9 +57,9 @@ public class BeanCopier {
 	 * @return
 	 * @throws IntrospectionException
 	 */
-	public static PropertyMapper buildMapperWithExpressions(
-			Class<?> srcClass,Class<?> destClass,List<String> expressions) throws IntrospectionException{
-		return prepareMapping(srcClass, destClass, new PropertyMapper(expressions));
+	public static <S,D> PropertyMapper<S,D> buildMapperWithExpressions(
+			Class<S> srcClass,Class<D> destClass,List<String> expressions) throws IntrospectionException{
+		return prepareMapping(srcClass, destClass, new PropertyMapper<S,D>(expressions));
 	}
 
 	/**
@@ -71,15 +71,16 @@ public class BeanCopier {
 	 * @return
 	 * @throws IntrospectionException
 	 */
-	public static PropertyMapper buildMapperWithSameProperty(
-			Class<?> srcClass,Class<?> destClass,List<String> specialPropertyExpressions) throws IntrospectionException{
+	public static <S,D> PropertyMapper<S,D> buildMapperWithSameProperty(
+			Class<S> srcClass,Class<D> destClass,List<String> specialPropertyExpressions) throws IntrospectionException{
 		//TODO 暂时修复该bug,****待优化****
 		/*
 		 * 由于PropertyMapper的构造器中对表达式生成的映射没有做相应处理,导致单条属性not perpared
 		 * 同时,由于在获取源对象与目标对象的相同属性时,只返回了源对象的属性描述符集合,因此现在的版本,经过构造器生成的映射器实际上是不可用的
 		 * 必须调用prepareMapping将读写方法填入映射器,覆盖原有读写方法
 		 */
-		return prepareMapping(srcClass, destClass, new PropertyMapper(srcClass, destClass, specialPropertyExpressions, PropertyMapper.PROP_SAME_TYPE));
+		return prepareMapping(srcClass, destClass, 
+				new PropertyMapper<S,D>(srcClass, destClass, specialPropertyExpressions, PropertyMapper.PROP_SAME_TYPE));
 	}
 	
 	/**
@@ -90,12 +91,13 @@ public class BeanCopier {
 	 * @return
 	 * @throws IntrospectionException
 	 */
-	public static PropertyMapper buildMapperWithSameNameProperty(
-			Class<?> srcClass,Class<?> destClass,List<String> specialPropertyExpressions) throws IntrospectionException{
+	public static <S,D> PropertyMapper<S,D> buildMapperWithSameNameProperty(
+			Class<S> srcClass,Class<D> destClass,List<String> specialPropertyExpressions) throws IntrospectionException{
 		/*
 		 * 与buildMapperWithSameProperty有相同的待优化问题
 		 */
-		return prepareMapping(srcClass, destClass, new PropertyMapper(srcClass, destClass, specialPropertyExpressions, PropertyMapper.PROP_SAME_NAME));
+		return prepareMapping(srcClass, destClass, 
+				new PropertyMapper<S,D>(srcClass, destClass, specialPropertyExpressions, PropertyMapper.PROP_SAME_NAME));
 	}
 	
 	/**
@@ -103,10 +105,26 @@ public class BeanCopier {
 	 * @param src		源对象
 	 * @param dest		目标对象
 	 * @param mapper	映射器
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static void copyBean(Object src,Object dest,PropertyMapper mapper){
+	@SuppressWarnings("unchecked")
+	public static <S,D> D copyBean(S src,Class<D> destClass,PropertyMapper<S,D> mapper) 
+			throws InstantiationException, IllegalAccessException{
 		if(!mapper.isPrepared()){
-			mapper = prepareMapping(src.getClass(),dest.getClass(),mapper);
+			mapper = prepareMapping((Class<S>)src.getClass(),destClass,mapper);
+		}
+		D dest = destClass.newInstance();
+		for (CopyableProperty cp : mapper.getCopyablePropertySet()) {
+			cp.copyProperty(src, dest);
+		}
+		return dest;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <S,D> void copyProperties(S src,D dest,PropertyMapper<S,D> mapper){
+		if(!mapper.isPrepared()){
+			mapper = prepareMapping((Class<S>)src.getClass(),(Class<D>)dest.getClass(),mapper);
 		}
 		for (CopyableProperty cp : mapper.getCopyablePropertySet()) {
 			cp.copyProperty(src, dest);
@@ -117,7 +135,7 @@ public class BeanCopier {
 	//*********************************************private**************************************************
 	
 	
-	private static PropertyMapper prepareMapping(Class<?> srcClass,Class<?> destClass,PropertyMapper mapper){
+	private static <S,D> PropertyMapper<S,D> prepareMapping(Class<S> srcClass,Class<D> destClass,PropertyMapper<S,D> mapper){
 		PropertyDescriptor[] srcPds = ReflectUtils.getBeanProperties(srcClass);
 		for (PropertyDescriptor pd : srcPds) {
 			String srcPropName = pd.getName();
