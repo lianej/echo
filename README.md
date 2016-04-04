@@ -1,8 +1,6 @@
-# 预计作为一个工具库
-...当然,现在只有一个工具
 
 
-##beancopier 0.10.1
+#beancopier 0.10.1
   对象属性复制器,通过构造一个可重复使用的属性映射器(PropertyMapper)提升效率,速度是apache commons-beanutils的5倍以上,多次复制时更高  
   可以通过书写 [映射表达式](#映射表达式) 来定制不同类型bean之间的属性复制  
   **在同时使用反射和表达式来构建映射器的场合(例如`BeanCopier.buildMapperWithSameProperty(Class,Class,List<String>)`),表达式具有更高的优先级**
@@ -56,7 +54,7 @@ SystemUser dest = BeanCopier.copyBean(src,SystemUser.class,mapper);
 
 ----
 
-##映射表达式
+###映射表达式
 
 > 通过字符串表达式定义两个类型之间属性的映射关系  
 > 一条完整的表达式形如:src=prop1,dest=prop2,clz=date,format=yyyyMMdd  
