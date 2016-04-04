@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.util.Assert;
 
 import me.lianej.common.beans.BeanCopier;
 import me.lianej.common.beans.PropertyMapper;
@@ -21,7 +22,13 @@ public class TestCase {
 		SAPUser src = new SAPUser("zhangsan","111111",d1,d1);
 		PropertyMapper<SAPUser,SAPUser> mapper = BeanCopier.buildMapperWithSameBeantype(SAPUser.class);
 		List<SAPUser> copy = copy(src,SAPUser.class,mapper);
+		SAPUser dest = copy.get(0);
 		System.out.println(copy.get(0));
+		Assert.isTrue(src.getName().equals(dest.getName()));
+		Assert.isTrue(src.getCreateDate().equals(dest.getCreateDate()));
+		Assert.isTrue(src.getLastLoginDate().equals(dest.getLastLoginDate()));
+		Assert.isTrue(src.getPwd().equals(dest.getPwd()));
+		Assert.isTrue(src.getRole()==null);
 	}
 	
 	@Test
@@ -56,15 +63,13 @@ public class TestCase {
 	}
 	
 	
-	private <S,T> List<T> copy(S src,Class<T> destClass,PropertyMapper<S,T> mapper) throws Exception{
+	private <SRC,DEST> List<DEST> copy(SRC src,Class<DEST> destClass,PropertyMapper<SRC,DEST> mapper) throws Exception{
 		long begin = System.currentTimeMillis();
-		List<T> result = new ArrayList<>();
+		List<DEST> result = new ArrayList<>();
 		for (int i = 0; i < outLoop; i++) {
 			long begin2 = System.currentTimeMillis();
 			for (int j = 0; j < innerLoop; j++) {
-				T dest = destClass.newInstance();
-				BeanCopier.copyBean(src, destClass, mapper);//异构拷贝
-				result.add(dest);
+				result.add(BeanCopier.copyBean(src, destClass, mapper));
 			}
 			System.out.println("第"+i+"次小循环:"+(System.currentTimeMillis()-begin2));
 		}

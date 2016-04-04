@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.google.common.base.Objects;
 
 /**
  * 工具集
@@ -99,7 +98,7 @@ final class CopierTools {
 	public static boolean isSameProperty(PropertyDescriptor srcPd,PropertyDescriptor destPd){
 		Class<?> srcPropType = srcPd.getPropertyType();
 		Class<?> destPropType = destPd.getPropertyType();
-		return  Objects.equal(srcPropType, destPropType) && isSameNameProperty(srcPd,destPd);
+		return  Objects.equals(srcPropType, destPropType) && isSameNameProperty(srcPd,destPd);
 	}
 	/**
 	 * 当源属性和目标属性属性名相同时返回true,否则返回false
@@ -110,7 +109,7 @@ final class CopierTools {
 	public static boolean isSameNameProperty(PropertyDescriptor srcPd,PropertyDescriptor destPd){
 		String srcPropName = srcPd.getName();
 		String destPropName = destPd.getName();
-		return Objects.equal(srcPropName, destPropName);
+		return Objects.equals(srcPropName, destPropName);
 	}
 	
 }
