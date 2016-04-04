@@ -16,9 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
 /**
  * 被映射属性的集合封装
  * @author lianej
@@ -31,7 +28,7 @@ public class PropertyMapper <S,D>{
 	static final int PROP_SAME_NAME = 0;//以属性名作为属性比较参考
 	static final int PROP_SAME_TYPE = 1;//以属性名和属性类型作为属性比较参考
 	//存在一个源属性对应多个目标属性的情况
-	private Multimap<String,CopyableProperty> srcMapping = ArrayListMultimap.create();
+	private SourcePropertyMap srcMapping = new SourcePropertyMap();
 	private Map<String,CopyableProperty> destMapping = new HashMap<>();
 	private PropertySet propertySet = new PropertySet();
 	private boolean prepared = false;

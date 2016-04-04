@@ -31,17 +31,20 @@ public class BeanCopier {
 	 * 构建同类型bean的属性映射器,使用不定参数
 	 * @param clazz
 	 * @param specialPropertyExpressions
+	 * @param <T>	对象类型
 	 * @return
 	 * @throws IntrospectionException
 	 */
-	public static <S> PropertyMapper<S,S> buildMapperWithSameBeantype(
-			Class<S> clazz,String...specialPropertyExpressions) throws IntrospectionException{
+	public static <T> PropertyMapper<T,T> buildMapperWithSameBeantype(
+			Class<T> clazz,String...specialPropertyExpressions) throws IntrospectionException{
 		return buildMapperWithSameBeantype(clazz,Arrays.asList(specialPropertyExpressions));
 	}
 	/**
 	 * 构建同类型bean的属性映射器,使用list参数
 	 * @param clazz
 	 * @param specialPropertyExpressions 
+	 * @param <S>	源对象类型
+	 * @param <D>	目标对象类型
 	 * @return
 	 * @throws IntrospectionException
 	 */
@@ -54,6 +57,8 @@ public class BeanCopier {
 	 * @param srcClass
 	 * @param destClass
 	 * @param expressions
+	 * @param <S>	源对象类型
+	 * @param <D>	目标对象类型
 	 * @return
 	 * @throws IntrospectionException
 	 */
@@ -68,6 +73,8 @@ public class BeanCopier {
 	 * @param srcClass
 	 * @param destClass
 	 * @param specialPropertyExpressions
+	 * @param <S>	源对象类型
+	 * @param <D>	目标对象类型
 	 * @return
 	 * @throws IntrospectionException
 	 */
@@ -88,6 +95,8 @@ public class BeanCopier {
 	 * @param srcClass
 	 * @param destClass
 	 * @param specialPropertyExpressions
+	 * @param <S>	源对象类型
+	 * @param <D>	目标对象类型
 	 * @return
 	 * @throws IntrospectionException
 	 */
@@ -101,34 +110,40 @@ public class BeanCopier {
 	}
 	
 	/**
-	 * 根据映射器规则复制对象属性
+	 * 根据映射器规则复制对象,返回根据目标对象class生成的新对象,源对象属性将被复制到该新对象中<p>
+	 * 目标对象类型需要提供公共无参构造器
 	 * @param src		源对象
-	 * @param dest		目标对象
+	 * @param destClass	目标对象class
 	 * @param mapper	映射器
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @param <S>	源对象类型
+	 * @param <D>	目标对象类型
 	 */
-	@SuppressWarnings("unchecked")
-	public static <S,D> D copyBean(S src,Class<D> destClass,PropertyMapper<S,D> mapper) 
-			throws InstantiationException, IllegalAccessException{
-		if(!mapper.isPrepared()){
-			mapper = prepareMapping((Class<S>)src.getClass(),destClass,mapper);
+	public static <S,D> D copyBean(S src,Class<D> destClass,PropertyMapper<S,D> mapper){
+		try {
+			return copyProperties(src,destClass.newInstance(),mapper);
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException("反射创建目标对象失败",e);
 		}
-		D dest = destClass.newInstance();
-		for (CopyableProperty cp : mapper.getCopyablePropertySet()) {
-			cp.copyProperty(src, dest);
-		}
-		return dest;
 	}
 	
+	/**
+	 * 根据映射器规则复制对象属性
+	 * @param src		源对象
+	 * @param dest   	目标对象,属性将被复制到该对象
+	 * @param mapper	映射器
+	 * @param <S>	源对象类型
+	 * @param <D>	目标对象类型
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public static <S,D> void copyProperties(S src,D dest,PropertyMapper<S,D> mapper){
+	public static <S,D> D copyProperties(S src,D dest,PropertyMapper<S,D> mapper){
 		if(!mapper.isPrepared()){
 			mapper = prepareMapping((Class<S>)src.getClass(),(Class<D>)dest.getClass(),mapper);
 		}
 		for (CopyableProperty cp : mapper.getCopyablePropertySet()) {
 			cp.copyProperty(src, dest);
 		}
+		return dest;
 	}
 	
 	
