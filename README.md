@@ -57,7 +57,7 @@ SystemUser dest = BeanCopier.copyBean(src,SystemUser.class,mapper);
 
 ##映射表达式
 
-> 通过字符串表达式定义两个类型之间属性的映射关系
+> 通过字符串表达式定义两个类型之间属性的映射关系  
 > 一条完整的表达式形如:src=prop1,dest=prop2,clz=date,format=yyyyMMdd  
 > 或:name=prop,clz=date,format=yyyyMMdd  
 > 或:!prop(否定表达式,表示不复制这个属性)  
