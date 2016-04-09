@@ -1,5 +1,3 @@
-#echo
-beancopier
 
 #beancopier 0.10.1
   对象属性复制器,通过构造一个可重复使用的属性映射器(PropertyMapper)提升效率,速度是apache commons-beanutils的5倍以上,多次复制时更高  
