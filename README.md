@@ -56,16 +56,19 @@ SystemUser dest = BeanCopier.copyBean(src,SystemUser.class,mapper);
 ###映射表达式
 
 > 通过字符串表达式定义两个类型之间属性的映射关系  
-> 一条完整的表达式形如:src=prop1,dest=prop2,clz=date,format=yyyyMMdd  
-> 或:name=prop,clz=date,format=yyyyMMdd  
-> 或:!prop(否定表达式,表示不复制这个属性)  
-> 或:!name=prop(否定表达式,表示不复制这个属性)  
-> 或:!src=prop(否定表达式,表示不复制源对象中名为prop的属性)  
-> 或:!dest=prop(否定表达式,表示不复制目标对象中名为prop的属性) 
+> 一条完整的表达式形如:
+> * src=prop1,dest=prop2,clz=date,format=yyyyMMdd  
+> * 或:name=prop,clz=date,format=yyyyMMdd  
+> * 或:!prop(否定表达式,表示不复制这个属性)  
+> * 或:!name=prop(否定表达式,表示不复制这个属性)  
+> * 或:!src=prop(否定表达式,表示不复制源对象中名为prop的属性)  
+> * 或:!dest=prop(否定表达式,表示不复制目标对象中名为prop的属性) 
+  
+#####表达式key:
 
-> src:    源对象属性名  
-> dest:   目标对象属性名  
-> name:   当源对象和目标对象要copy的属性名一致时,可以使用name=prop的形式来为src和dest同时写入一致的属性名,当填写了src或dest时,此key无效  
-> clz:    目标对象属性类型(可省略,默认为string,支持long,int,integer,date,double,decimal,char,character等,详见SupportedClass类),不区分大小写  
-> format: 如果源属性是日期字符串,而目标属性是日期,则需要填写源属性字符串格式化为日期的格式(可省略,默认为yyyy-MM-dd HH:mm:ss)  
+* src:    源对象属性名  
+* dest:   目标对象属性名  
+* name:   当源对象和目标对象要copy的属性名一致时,可以使用name=prop的形式来为src和dest同时写入一致的属性名,当填写了src或dest时,此key无效  
+* clz:    目标对象属性类型(可省略,默认为string,支持long,int,integer,date,double,decimal,char,character等,详见SupportedClass类),不区分大小写  
+* format: 如果源属性是日期字符串,而目标属性是日期,则需要填写源属性字符串格式化为日期的格式(可省略,默认为yyyy-MM-dd HH:mm:ss)  
 
